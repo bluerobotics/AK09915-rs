@@ -17,9 +17,7 @@ jobs:
     - name: Check Type
       run: cargo fmt -- --check
     - name: Check Clippy
-      uses: actions-rs/clippy-check@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+      run: cargo clippy -- -Dwarnings
     - name: Run internal tests
       run: cargo test --verbose -- --nocapture
     - name: Build
