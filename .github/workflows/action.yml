@@ -3,7 +3,7 @@ name: Test all targets
 on: [push, pull_request]
 
 permissions:
-  checks: write
+  contents: write
 
 jobs:
   quick-tests:
