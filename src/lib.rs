@@ -1,6 +1,8 @@
 use embedded_hal::blocking::i2c::{Write, WriteRead};
 
 const AK09915_ADDRESS: u8 = 0x0C;
+///Magnetic sensor sensitivity (BSE) for Ta = 25 ˚C [µT/LSB],  Typical 0.15 +- 0.0075
+const AK09915_FLUX_CONSTANT: f32 = 0.15;
 
 // Register Addresses
 #[repr(u16)]
@@ -153,6 +155,17 @@ where
             return Err(Error::SensorOverflow);
         }
         Ok(())
+    }
+
+    // Return the readings in magnetic flux density [uT]
+    pub fn read(&mut self) -> Result<(f32, f32, f32), Error<E>> {
+        let raw_data = self.read_raw()?;
+        let scaled_data = (
+            raw_data.0 as f32 * AK09915_FLUX_CONSTANT,
+            raw_data.1 as f32 * AK09915_FLUX_CONSTANT,
+            raw_data.2 as f32 * AK09915_FLUX_CONSTANT,
+        );
+        Ok(scaled_data)
     }
 
     // 9.4.3.2. Normal Read Sequence:
