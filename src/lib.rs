@@ -124,7 +124,7 @@ where
     pub fn self_test(&mut self) -> Result<bool, Error<E>> {
         self.set_mode(Mode::SelfTest)?;
         std::thread::sleep(std::time::Duration::from_micros(4000));
-        let (hx, hy, hz) = self.read()?;
+        let (hx, hy, hz) = self.read_raw()?;
         // Self-test judgment
         if (-200..=200).contains(&hx) && (-200..=200).contains(&hy) && (-800..=-200).contains(&hz) {
             return Ok(true);
@@ -176,7 +176,7 @@ where
     //      By reading ST2 register, this protection is released. It is required to read
     //      ST2 register after data reading.
 
-    pub fn read(&mut self) -> Result<(i16, i16, i16), Error<E>> {
+    pub fn read_raw(&mut self) -> Result<(i16, i16, i16), Error<E>> {
         self.check_data_ready()?;
         let res = self.read_unchecked();
         self.check_overflow()?;
