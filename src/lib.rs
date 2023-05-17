@@ -127,13 +127,8 @@ where
         let (hx, hy, hz) = self.read()?;
         // Self-test judgment
         if (-200..=200).contains(&hx) && (-200..=200).contains(&hy) && (-800..=-200).contains(&hz) {
-            println!(
-                "Self-test passed \nMagnetometer: x={}, y={}, z={}",
-                hx, hy, hz
-            );
             return Ok(true);
         }
-        println!("Self-test failed");
         Ok(false)
     }
 
