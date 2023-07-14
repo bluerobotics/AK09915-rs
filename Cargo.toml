@@ -2,6 +2,14 @@
 name = "ak09915_rs"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+description = "A Rust library for interacting with the AK09915 magnetometer"
+homepage = "https://docs.bluerobotics.com/AK09915-rs/ak09915_rs"
+documentation = "https://docs.rs/ak09915_rs"
+repository = "https://github.com/bluerobotics/AK09915-rs"
+readme = "README.md"
+categories = ["embedded"]
+keywords = ["magnetometer", "sensor", "embedded", "ak09915", "AsahiKASEI"]
 
 [dependencies]
 embedded-hal = "0.2.5"
