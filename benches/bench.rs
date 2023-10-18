@@ -10,11 +10,11 @@ fn new() -> Ak09915<I2cdev> {
 fn ak09915(c: &mut Criterion) {
     #[macro_export]
     macro_rules! bench {
-    ($bench_fn:ident($($arg:tt)*)) => {
-        let mut sensor = new();
-        sensor.set_mode(Mode::Cont200Hz).unwrap();
-        c.bench_function(stringify!($bench_fn), |b| b.iter(|| sensor.$bench_fn($($arg)*)));
-    }}
+        ($bench_fn:ident($($arg:tt)*)) => {
+            let mut sensor = new();
+            sensor.set_mode(Mode::Cont200Hz).unwrap();
+            c.bench_function(stringify!($bench_fn), |b| b.iter(|| sensor.$bench_fn($($arg)*).expect("Error during benchmark")));
+        }}
 
     c.bench_function("new", |b| b.iter(|| new()));
 
