@@ -16,5 +16,10 @@ embedded-hal = "0.2.5"
 
 [dev-dependencies]
 clap = { version = "4.2.2", features = ["derive"] }
+criterion = { version = "0.5.1", features = ["html_reports"] }
 embedded-hal-mock = "0.9.0"
 linux-embedded-hal = "0.3.2"
+
+[[bench]]
+name = "bench"
+harness = false
