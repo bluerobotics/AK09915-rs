@@ -53,6 +53,25 @@ impl From<Mode> for u8 {
     }
 }
 
+trait AssociateValue {
+    // Return a minimum required interval to wait before another attempt. Actually 1/2 sample rate.
+    fn check_interval(&self) -> std::time::Duration;
+}
+
+impl AssociateValue for Mode {
+    fn check_interval(&self) -> std::time::Duration {
+        match self {
+            Mode::Cont10Hz => std::time::Duration::from_millis(50),
+            Mode::Cont20Hz => std::time::Duration::from_millis(25),
+            Mode::Cont50Hz => std::time::Duration::from_millis(10),
+            Mode::Cont100Hz => std::time::Duration::from_millis(5),
+            Mode::Cont200Hz => std::time::Duration::from_micros(2500),
+            Mode::Cont1Hz => std::time::Duration::from_millis(500),
+            _ => std::time::Duration::from_micros(2500),
+        }
+    }
+}
+
 impl From<Register> for u8 {
     fn from(register: Register) -> Self {
         register as u8
@@ -145,7 +164,7 @@ where
             if (status & 0x01) != 0 {
                 return Ok(()); // Data ready
             }
-            std::thread::sleep(std::time::Duration::from_millis(100));
+            std::thread::sleep(self.mode.check_interval());
         }
         Err(Error::DataNotReady)
     }
