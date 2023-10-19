@@ -27,6 +27,7 @@ pub enum Register {
 
 // AK09915 Mode Settings - Corresponding to Control Register 2
 #[repr(u16)]
+#[derive(Clone, Copy)]
 pub enum Mode {
     PowerDown = 0x00,
     Single = 0x01,
@@ -61,6 +62,7 @@ impl From<Register> for u8 {
 pub struct Ak09915<I2C> {
     pub i2c: I2C,
     pub address: u8,
+    pub mode: Mode,
 }
 
 impl<I2C, E> Ak09915<I2C>
@@ -71,6 +73,7 @@ where
         Self {
             i2c,
             address: AK09915_ADDRESS,
+            mode: Mode::PowerDown,
         }
     }
 
@@ -105,6 +108,7 @@ where
         self.write_register(Register::CNTL2, Mode::PowerDown.into())?;
         std::thread::sleep(std::time::Duration::from_micros(100));
         self.write_register(Register::CNTL2, mode.into())?;
+        self.mode = mode;
         Ok(())
     }
 
