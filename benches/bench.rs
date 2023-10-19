@@ -15,11 +15,27 @@ fn ak09915(c: &mut Criterion) {
             sensor.set_mode(Mode::Cont200Hz).unwrap();
             c.bench_function(stringify!($bench_fn), |b| b.iter(|| sensor.$bench_fn($($arg)*).expect("Error during benchmark")));
         }}
+    macro_rules! reading {
+        ($name:ident) => {
+            let mut sensor = new();
+            sensor.set_mode(Mode::$name).unwrap();
+            std::thread::sleep(std::time::Duration::from_millis(500));
+            c.bench_function(stringify!($name), |b| {
+                b.iter(|| sensor.read().expect("Error during benchmark"))
+            });
+        };
+    }
 
     c.bench_function("new", |b| b.iter(|| new()));
 
     bench!(read_register(Register::ST1));
     bench!(read());
+
+    reading!(Cont1Hz);
+    reading!(Cont10Hz);
+    reading!(Cont50Hz);
+    reading!(Cont100Hz);
+    reading!(Cont200Hz);
 }
 
 criterion_group!(benches, ak09915);
