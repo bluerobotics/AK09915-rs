@@ -89,9 +89,9 @@ where
     }
 
     pub fn init(&mut self) -> Result<(), Error<E>> {
-        // Soft reset device and put on continuous measurement
+        // Soft reset device and put on continuous measurement mode, with 200 Hz
         self.reset()?;
-        self.set_mode(Mode::PowerDown)?;
+        self.set_mode(Mode::Cont200Hz)?;
         Ok(())
     }
 
