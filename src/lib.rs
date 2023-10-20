@@ -247,11 +247,14 @@ mod tests {
     use super::*;
     use embedded_hal_mock::i2c::{Mock as I2cMock, Transaction as I2cTrans};
     #[test]
-    fn set_mode_and_read_sensor() {
-        // Define expected I2C transactions for setting mode and reading sensor data
+    fn read_sensor() {
         let expected_trans = [
-            // I2cTrans::write(0x0C, vec![0x31, 0x10]), // Set mode to continuous measurement mode 1
-            I2cTrans::write_read(0x0C, vec![0x11], vec![0x04, 0x23, 0x05, 0x24, 0x06, 0x25]), // Read sensor data
+            I2cTrans::write_read(AK09915_ADDRESS, vec![Register::ST1.into()], vec![0x01]),
+            I2cTrans::write_read(
+                AK09915_ADDRESS,
+                vec![Register::HXL.into()],
+                vec![0x04, 0x23, 0x05, 0x24, 0x06, 0x25, 0x00, 0x01],
+            ),
         ];
 
         // Create a mock I2C device and queue the expected transactions
@@ -260,10 +263,7 @@ mod tests {
         // Create an AK09915 instance using the mock I2C device
         let mut sensor = Ak09915::new(i2c_mock);
 
-        // Set the mode to continuous measurement mode 1
-        // sensor.set_mode(Mode::Cont1Hz).unwrap();
-
-        let (x, y, z) = sensor.read_unchecked().expect("Error reading magnetometer");
+        let (x, y, z) = sensor.read_raw().expect("Error reading magnetometer");
 
         // Verify that the magnetometer data matches the expected values
         assert_eq!(x, 0x2304);
