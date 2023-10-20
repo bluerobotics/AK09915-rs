@@ -135,14 +135,13 @@ where
     }
 
     pub fn check_data_ready(&mut self) -> Result<(), Error<E>> {
-        let mut retries = 10;
-        while retries > 0 {
+        let retries = 10;
+        for _ in 0..retries {
             let status = self.read_register(Register::ST1)?;
             if (status & 0x01) != 0 {
                 return Ok(()); // Data ready
             }
             std::thread::sleep(std::time::Duration::from_millis(100));
-            retries -= 1;
         }
         Err(Error::DataNotReady)
     }
