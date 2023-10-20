@@ -213,9 +213,21 @@ where
 
     pub fn read_raw(&mut self) -> Result<(i16, i16, i16), Error<E>> {
         self.check_data_ready()?;
-        let res = self.read_unchecked();
-        self.check_overflow()?;
-        res
+
+        let mut buffer: [u8; 8] = [0u8; 8];
+        self.i2c
+            .write_read(self.address, &[Register::HXL.into()], &mut buffer)
+            .map_err(Error::I2C)?;
+
+        // Check the HOFL bit from ST2 register
+        if (buffer[7] & 0x08) != 0 {
+            return Err(Error::SensorOverflow);
+        }
+
+        let x = i16::from_le_bytes([buffer[0], buffer[1]]);
+        let y = i16::from_le_bytes([buffer[2], buffer[3]]);
+        let z = i16::from_le_bytes([buffer[4], buffer[5]]);
+        Ok((x, y, z))
     }
 
     pub fn read_unchecked(&mut self) -> Result<(i16, i16, i16), Error<E>> {
