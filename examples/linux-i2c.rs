@@ -28,7 +28,7 @@ fn main() {
     }
     println!("Test 5 measurement, without set single measurement(no updates)");
     for _n in 1..=5 {
-        let (x, y, z) = sensor.read_unchecked().unwrap();
+        let (x, y, z) = sensor.read_raw_unchecked().unwrap();
         println!("Magnetometer: x={}, y={}, z={}", x, y, z);
     }
     println!("Test 5 measurement, using continuous mode");
