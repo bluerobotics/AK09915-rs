@@ -259,6 +259,18 @@
 <a href="#259" id="259">259</a>
 <a href="#260" id="260">260</a>
 <a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>embedded_hal::blocking::i2c::{Write, WriteRead};
 
 <span class="kw">const </span>AK09915_ADDRESS: u8 = <span class="number">0x0C</span>;
@@ -434,7 +446,7 @@
     //      |ST2| -&gt; | 0 0 0 0 HOFL INV 0 0 |
     </span><span class="kw">pub fn </span>check_overflow(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&lt;E&gt;&gt; {
         <span class="kw">let </span>status = <span class="self">self</span>.read_register(Register::ST2)<span class="question-mark">?</span>;
-        <span class="kw">if </span>(status &amp; <span class="number">0x04</span>) != <span class="number">0 </span>{
+        <span class="kw">if </span>(status &amp; <span class="number">0x08</span>) != <span class="number">0 </span>{
             <span class="kw">return </span><span class="prelude-val">Err</span>(Error::SensorOverflow);
         }
         <span class="prelude-val">Ok</span>(())
@@ -474,9 +486,21 @@
 
     </span><span class="kw">pub fn </span>read_raw(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(i16, i16, i16), Error&lt;E&gt;&gt; {
         <span class="self">self</span>.check_data_ready()<span class="question-mark">?</span>;
-        <span class="kw">let </span>res = <span class="self">self</span>.read_unchecked();
-        <span class="self">self</span>.check_overflow()<span class="question-mark">?</span>;
-        res
+
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer: [u8; <span class="number">8</span>] = [<span class="number">0u8</span>; <span class="number">8</span>];
+        <span class="self">self</span>.i2c
+            .write_read(<span class="self">self</span>.address, <span class="kw-2">&amp;</span>[Register::HXL.into()], <span class="kw-2">&amp;mut </span>buffer)
+            .map_err(Error::I2C)<span class="question-mark">?</span>;
+
+        <span class="comment">// Check the HOFL bit from ST2 register
+        </span><span class="kw">if </span>(buffer[<span class="number">7</span>] &amp; <span class="number">0x08</span>) != <span class="number">0 </span>{
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::SensorOverflow);
+        }
+
+        <span class="kw">let </span>x = i16::from_le_bytes([buffer[<span class="number">0</span>], buffer[<span class="number">1</span>]]);
+        <span class="kw">let </span>y = i16::from_le_bytes([buffer[<span class="number">2</span>], buffer[<span class="number">3</span>]]);
+        <span class="kw">let </span>z = i16::from_le_bytes([buffer[<span class="number">4</span>], buffer[<span class="number">5</span>]]);
+        <span class="prelude-val">Ok</span>((x, y, z))
     }
 
     <span class="kw">pub fn </span>read_unchecked(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(i16, i16, i16), Error&lt;E&gt;&gt; {
@@ -496,12 +520,15 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span>embedded_hal_mock::i2c::{Mock <span class="kw">as </span>I2cMock, Transaction <span class="kw">as </span>I2cTrans};
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>set_mode_and_read_sensor() {
-        <span class="comment">// Define expected I2C transactions for setting mode and reading sensor data
-        </span><span class="kw">let </span>expected_trans = [
-            <span class="comment">// I2cTrans::write(0x0C, vec![0x31, 0x10]), // Set mode to continuous measurement mode 1
-            </span>I2cTrans::write_read(<span class="number">0x0C</span>, <span class="macro">vec!</span>[<span class="number">0x11</span>], <span class="macro">vec!</span>[<span class="number">0x04</span>, <span class="number">0x23</span>, <span class="number">0x05</span>, <span class="number">0x24</span>, <span class="number">0x06</span>, <span class="number">0x25</span>]), <span class="comment">// Read sensor data
-        </span>];
+    </span><span class="kw">fn </span>read_sensor() {
+        <span class="kw">let </span>expected_trans = [
+            I2cTrans::write_read(AK09915_ADDRESS, <span class="macro">vec!</span>[Register::ST1.into()], <span class="macro">vec!</span>[<span class="number">0x01</span>]),
+            I2cTrans::write_read(
+                AK09915_ADDRESS,
+                <span class="macro">vec!</span>[Register::HXL.into()],
+                <span class="macro">vec!</span>[<span class="number">0x04</span>, <span class="number">0x23</span>, <span class="number">0x05</span>, <span class="number">0x24</span>, <span class="number">0x06</span>, <span class="number">0x25</span>, <span class="number">0x00</span>, <span class="number">0x01</span>],
+            ),
+        ];
 
         <span class="comment">// Create a mock I2C device and queue the expected transactions
         </span><span class="kw">let </span>i2c_mock = I2cMock::new(<span class="kw-2">&amp;</span>expected_trans);
@@ -509,10 +536,7 @@
         <span class="comment">// Create an AK09915 instance using the mock I2C device
         </span><span class="kw">let </span><span class="kw-2">mut </span>sensor = Ak09915::new(i2c_mock);
 
-        <span class="comment">// Set the mode to continuous measurement mode 1
-        // sensor.set_mode(Mode::Cont1Hz).unwrap();
-
-        </span><span class="kw">let </span>(x, y, z) = sensor.read_unchecked().expect(<span class="string">&quot;Error reading magnetometer&quot;</span>);
+        <span class="kw">let </span>(x, y, z) = sensor.read_raw().expect(<span class="string">&quot;Error reading magnetometer&quot;</span>);
 
         <span class="comment">// Verify that the magnetometer data matches the expected values
         </span><span class="macro">assert_eq!</span>(x, <span class="number">0x2304</span>);
