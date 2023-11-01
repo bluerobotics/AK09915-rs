@@ -231,6 +231,13 @@ where
         Ok(scaled_data)
     }
 
+    fn buffer_to_xyz(buffer: &[u8; 6]) -> (i16, i16, i16) {
+        let x = i16::from_le_bytes([buffer[0], buffer[1]]);
+        let y = i16::from_le_bytes([buffer[2], buffer[3]]);
+        let z = i16::from_le_bytes([buffer[4], buffer[5]]);
+        (x, y, z)
+    }
+
     // 9.4.3.2. Normal Read Sequence:
     //   1. Check Data Ready or not by any of the following method:
     //      - Polling DRDY bit of ST1 register
@@ -261,10 +268,7 @@ where
 
         Self::check_st2_value(buffer[7])?;
 
-        let x = i16::from_le_bytes([buffer[0], buffer[1]]);
-        let y = i16::from_le_bytes([buffer[2], buffer[3]]);
-        let z = i16::from_le_bytes([buffer[4], buffer[5]]);
-        Ok((x, y, z))
+        Ok(Self::buffer_to_xyz(&buffer[..6].try_into().unwrap()))
     }
 
     pub fn read_raw_unchecked(&mut self) -> Result<(i16, i16, i16), Error<E>> {
@@ -272,10 +276,7 @@ where
         self.i2c
             .write_read(self.address, &[Register::HXL.into()], &mut buffer)
             .map_err(Error::I2C)?;
-        let x = i16::from_le_bytes([buffer[0], buffer[1]]);
-        let y = i16::from_le_bytes([buffer[2], buffer[3]]);
-        let z = i16::from_le_bytes([buffer[4], buffer[5]]);
-        Ok((x, y, z))
+        Ok(Self::buffer_to_xyz(&buffer[..6].try_into().unwrap()))
     }
 }
 
