@@ -158,7 +158,7 @@ where
     }
 
     pub fn check_data_ready(&mut self) -> Result<(), Error<E>> {
-        let retries = 10;
+        let retries = 3;
         for _ in 0..retries {
             let status = self.read_register(Register::ST1)?;
             if (status & 0x01) != 0 {
