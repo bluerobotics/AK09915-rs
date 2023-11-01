@@ -43,7 +43,8 @@ pub enum Mode {
 #[derive(Debug, PartialEq)]
 pub enum Error<E> {
     I2C(E),
-    SensorOverflow,
+    MagneticSensorOverflow,
+    InvalidData,
     DataNotReady,
 }
 
@@ -168,15 +169,56 @@ where
         }
         Err(Error::DataNotReady)
     }
-    // 9.4.3.2. Normal Read Sequence:
-    //   1. Check Data Ready or not by any of the following method:
-    //      |ST2| -> | 0 0 0 0 HOFL INV 0 0 |
-    pub fn check_overflow(&mut self) -> Result<(), Error<E>> {
-        let status = self.read_register(Register::ST2)?;
-        if (status & 0x08) != 0 {
-            return Err(Error::SensorOverflow);
+
+    /// Checks the status of the ST2 register based on the provided value.
+    ///
+    /// # Description
+    ///
+    /// The ST2 register (address: 18h) is a read-only register that provides status information about the sensor.
+    /// This function checks the value of the ST2 register and returns an error if any of the error bits are set.
+    ///
+    /// ## ST2 Register Format:
+    ///
+    /// | D7 | D6 | D5 | D4 | D3 | D2 | D1 | D0 |
+    /// |----|----|----|----|----|----|----|----|
+    /// |  0 |  0 |  0 |  0 |HOFL| INV|  0 |  0 |
+    ///
+    /// - `HOFL` bit: Indicates a magnetic sensor overflow.
+    ///   - `0`: Normal
+    ///   - `1`: Magnetic sensor overflow occurred
+    ///
+    /// - `INV` bit: Indicates invalid data.
+    ///   - `0`: Normal
+    ///   - `1`: Data is invalid
+    ///
+    /// # Parameters
+    ///
+    /// - `st2_value`: The value of the ST2 register to check.
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(())`: If the ST2 register value indicates no errors.
+    /// - `Err(Error::MagneticSensorOverflow)`: If the HOFL bit is set.
+    /// - `Err(Error::InvalidData)`: If the INV bit is set.
+    pub fn check_st2_value(st2_value: u8) -> Result<(), Error<E>> {
+        const HOFL_BIT: u8 = 0b00001000;
+        const INV_BIT: u8 = 0b000000100;
+
+        if st2_value & HOFL_BIT != 0 {
+            return Err(Error::MagneticSensorOverflow);
         }
+
+        if st2_value & INV_BIT != 0 {
+            return Err(Error::InvalidData);
+        }
+
         Ok(())
+    }
+
+    /// Check St2 register value directly
+    pub fn check_st2(&mut self) -> Result<(), Error<E>> {
+        let status = self.read_register(Register::ST2)?;
+        Self::check_st2_value(status)
     }
 
     // Return the readings in magnetic flux density [uT]
@@ -219,10 +261,7 @@ where
             .write_read(self.address, &[Register::HXL.into()], &mut buffer)
             .map_err(Error::I2C)?;
 
-        // Check the HOFL bit from ST2 register
-        if (buffer[7] & 0x08) != 0 {
-            return Err(Error::SensorOverflow);
-        }
+        Self::check_st2_value(buffer[7])?;
 
         let x = i16::from_le_bytes([buffer[0], buffer[1]]);
         let y = i16::from_le_bytes([buffer[2], buffer[3]]);
