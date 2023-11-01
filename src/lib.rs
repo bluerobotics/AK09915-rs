@@ -145,7 +145,6 @@ where
     //     - HX[15:0] bits: -200 ≤ HX ≤ +200
     //     - HY[15:0] bits: -200 ≤ HY ≤ +200
     //     - HZ[15:0] bits: -800 ≤ HZ ≤ -200
-
     pub fn self_test(&mut self) -> Result<bool, Error<E>> {
         self.set_mode(Mode::SelfTest)?;
         std::thread::sleep(std::time::Duration::from_micros(4000));
@@ -210,7 +209,6 @@ where
     //      Stored measurement data is protected during data reading and data is not updated.
     //      By reading ST2 register, this protection is released. It is required to read
     //      ST2 register after data reading.
-
     pub fn read_raw(&mut self) -> Result<(i16, i16, i16), Error<E>> {
         self.check_data_ready()?;
 
@@ -230,7 +228,7 @@ where
         Ok((x, y, z))
     }
 
-    pub fn read_unchecked(&mut self) -> Result<(i16, i16, i16), Error<E>> {
+    pub fn read_raw_unchecked(&mut self) -> Result<(i16, i16, i16), Error<E>> {
         let mut buffer: [u8; 6] = [0u8; 6];
         self.i2c
             .write_read(self.address, &[Register::HXL.into()], &mut buffer)
