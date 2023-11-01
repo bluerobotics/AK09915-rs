@@ -151,7 +151,7 @@ where
     //      |ST2| -> | 0 0 0 0 HOFL INV 0 0 |
     pub fn check_overflow(&mut self) -> Result<(), Error<E>> {
         let status = self.read_register(Register::ST2)?;
-        if (status & 0x04) != 0 {
+        if (status & 0x08) != 0 {
             return Err(Error::SensorOverflow);
         }
         Ok(())
