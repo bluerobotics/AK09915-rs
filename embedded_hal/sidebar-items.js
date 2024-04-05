@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["adc","blocking","can","digital","fmt","prelude","serial","spi","timer","watchdog"],"trait":["PwmPin"]};
+window.SIDEBAR_ITEMS = {"mod":["delay","digital","i2c","pwm","spi"]};

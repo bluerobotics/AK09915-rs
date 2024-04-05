@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["ak09915_rs","embedded_hal","void"];
+window.ALL_CRATES = ["ak09915_rs","embedded_hal"];

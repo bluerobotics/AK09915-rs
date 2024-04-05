@@ -311,7 +311,9 @@
 <a href="#309" id="309">309</a>
 <a href="#310" id="310">310</a>
 <a href="#311" id="311">311</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>embedded_hal::blocking::i2c::{Write, WriteRead};
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>embedded_hal::i2c::I2c;
 
 <span class="kw">const </span>AK09915_ADDRESS: u8 = <span class="number">0x0C</span>;
 <span class="doccomment">///Magnetic sensor sensitivity (BSE) for Ta = 25 ˚C [µT/LSB],  Typical 0.15 +- 0.0075
@@ -400,7 +402,7 @@
 
 <span class="kw">impl</span>&lt;I2C, E&gt; Ak09915&lt;I2C&gt;
 <span class="kw">where
-    </span>I2C: Write&lt;Error = E&gt; + WriteRead&lt;Error = E&gt;,
+    </span>I2C: I2c&lt;Error = E&gt;,
 {
     <span class="kw">pub fn </span>new(i2c: I2C) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
@@ -596,7 +598,7 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span>embedded_hal_mock::i2c::{Mock <span class="kw">as </span>I2cMock, Transaction <span class="kw">as </span>I2cTrans};
+    <span class="kw">use </span>embedded_hal_mock::eh1::i2c::{Mock <span class="kw">as </span>I2cMock, Transaction <span class="kw">as </span>I2cTrans};
     <span class="attr">#[test]
     </span><span class="kw">fn </span>read_sensor() {
         <span class="kw">let </span>expected_trans = [
@@ -620,6 +622,8 @@
         </span><span class="macro">assert_eq!</span>(x, <span class="number">0x2304</span>);
         <span class="macro">assert_eq!</span>(y, <span class="number">0x2405</span>);
         <span class="macro">assert_eq!</span>(z, <span class="number">0x2506</span>);
+
+        sensor.i2c.done();
     }
 }
 </code></pre></div></section></main></body></html>
