@@ -307,5 +307,7 @@ mod tests {
         assert_eq!(x, 0x2304);
         assert_eq!(y, 0x2405);
         assert_eq!(z, 0x2506);
+
+        sensor.i2c.done();
     }
 }
