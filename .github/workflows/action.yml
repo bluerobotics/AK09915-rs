@@ -54,7 +54,7 @@ jobs:
         prefix-key: "rust-cache"
         shared-key: "benchmark"
     - name: Cargo Bench
-      run:  cargo bench --jobs 1 --bench bench -- --output-format bencher | tee output.txt
+      run:  cargo bench --jobs 1 --bench bench -- --output-format bencher | tee output.txt || { echo "Benchmark failed"; exit 1; }
     - name: Compare results & store cached results
       uses: benchmark-action/github-action-benchmark@v1.18.0
       with:
