@@ -12,13 +12,13 @@ categories = ["embedded"]
 keywords = ["magnetometer", "sensor", "embedded", "ak09915", "AsahiKASEI"]
 
 [dependencies]
-embedded-hal = "0.2.5"
+embedded-hal = "1.0.0"
 
 [dev-dependencies]
 clap = { version = "4.2.2", features = ["derive"] }
 criterion = { version = "0.5.1", features = ["html_reports"] }
-embedded-hal-mock = "0.9.0"
-linux-embedded-hal = "0.3.2"
+embedded-hal-mock = { version = "0.10.0", features = ["eh1"] }
+linux-embedded-hal = "0.4"
 
 [[bench]]
 name = "bench"

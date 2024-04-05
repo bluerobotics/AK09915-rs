@@ -1,4 +1,4 @@
-use embedded_hal::blocking::i2c::{Write, WriteRead};
+use embedded_hal::i2c::I2c;
 
 const AK09915_ADDRESS: u8 = 0x0C;
 ///Magnetic sensor sensitivity (BSE) for Ta = 25 ˚C [µT/LSB],  Typical 0.15 +- 0.0075
@@ -87,7 +87,7 @@ pub struct Ak09915<I2C> {
 
 impl<I2C, E> Ak09915<I2C>
 where
-    I2C: Write<Error = E> + WriteRead<Error = E>,
+    I2C: I2c<Error = E>,
 {
     pub fn new(i2c: I2C) -> Self {
         Self {
@@ -283,7 +283,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use embedded_hal_mock::i2c::{Mock as I2cMock, Transaction as I2cTrans};
+    use embedded_hal_mock::eh1::i2c::{Mock as I2cMock, Transaction as I2cTrans};
     #[test]
     fn read_sensor() {
         let expected_trans = [
@@ -307,5 +307,7 @@ mod tests {
         assert_eq!(x, 0x2304);
         assert_eq!(y, 0x2405);
         assert_eq!(z, 0x2506);
+
+        sensor.i2c.done();
     }
 }
