@@ -1,0 +1,152 @@
+{
+  "lastUpdate": 1712324182525,
+  "repoUrl": "https://github.com/bluerobotics/AK09915-rs",
+  "entries": {
+    "Benchmark": [
+      {
+        "commit": {
+          "author": {
+            "email": "cwongmath@gmail.com",
+            "name": "Colin Wong",
+            "username": "democat3457"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "aca98e4951a3e4740cd95a0092ae536da6a903bd",
+          "message": "Update embedded hal to 1.0.0 (#23)\n\n* Update embedded hal\r\n\r\n* Call done on the mock\r\n\r\n---------\r\n\r\nCo-authored-by: Robosub UTD <robosub.utdallas@gmail.com>",
+          "timestamp": "2024-04-05T10:19:17-03:00",
+          "tree_id": "ab049189cf1259ed8619777a4b74239d638f7f5c",
+          "url": "https://github.com/bluerobotics/AK09915-rs/commit/aca98e4951a3e4740cd95a0092ae536da6a903bd"
+        },
+        "date": 1712324182511,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "new",
+            "value": 18616,
+            "range": "± 2399",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "read_register",
+            "value": 67558,
+            "range": "± 2563",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "read",
+            "value": 4959013,
+            "range": "± 120490",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Cont1Hz",
+            "value": 1000626666,
+            "range": "± 50020262",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Cont10Hz",
+            "value": 100611443,
+            "range": "± 8604549",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Cont50Hz",
+            "value": 20595484,
+            "range": "± 1408421",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Cont100Hz",
+            "value": 9724457,
+            "range": "± 371385",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Cont200Hz",
+            "value": 4864825,
+            "range": "± 120393",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "cwongmath@gmail.com",
+            "name": "Colin Wong",
+            "username": "democat3457"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "aca98e4951a3e4740cd95a0092ae536da6a903bd",
+          "message": "Update embedded hal to 1.0.0 (#23)\n\n* Update embedded hal\r\n\r\n* Call done on the mock\r\n\r\n---------\r\n\r\nCo-authored-by: Robosub UTD <robosub.utdallas@gmail.com>",
+          "timestamp": "2024-04-05T10:19:17-03:00",
+          "tree_id": "ab049189cf1259ed8619777a4b74239d638f7f5c",
+          "url": "https://github.com/bluerobotics/AK09915-rs/commit/aca98e4951a3e4740cd95a0092ae536da6a903bd"
+        },
+        "date": 1712324182511,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "new",
+            "value": 18616,
+            "range": "± 2399",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "read_register",
+            "value": 67558,
+            "range": "± 2563",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "read",
+            "value": 4959013,
+            "range": "± 120490",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Cont1Hz",
+            "value": 1000626666,
+            "range": "± 50020262",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Cont10Hz",
+            "value": 100611443,
+            "range": "± 8604549",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Cont50Hz",
+            "value": 20595484,
+            "range": "± 1408421",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Cont100Hz",
+            "value": 9724457,
+            "range": "± 371385",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Cont200Hz",
+            "value": 4864825,
+            "range": "± 120393",
+            "unit": "ns/iter"
+          }
+        ]
+      }
+    ]
+  }
+}
